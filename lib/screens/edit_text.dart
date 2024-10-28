@@ -14,47 +14,51 @@ class _EditTextScreenState extends State<EditTextScreen> {
   final TranslateLanguage sourceLanguage = TranslateLanguage.english;
   final TranslateLanguage targetLanguage = TranslateLanguage.hindi;
 
+  bool isSourceModalDownloaded = false;
+  bool isTargetModalDownloaded = false;
+
+  String translatedText = '';
+  dynamic modelManager;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+     modelManager = OnDeviceTranslatorModelManager();
+  }
+
   void handleTranslateClick(String? text) async {
     if (text != null) {
       try {
-        print("Original text: $text");
-        final onDeviceTranslator = OnDeviceTranslator(
-          sourceLanguage: sourceLanguage,
-          targetLanguage: targetLanguage,
-        );
-        print("Translator initialized");
 
-        final modelManager = OnDeviceTranslatorModelManager();
+        isSourceModalDownloaded = await modelManager.isModelDownloaded(sourceLanguage.bcpCode);
+        isTargetModalDownloaded = await modelManager.isModelDownloaded(targetLanguage.bcpCode);
 
-        // Check if source model is downloaded
-        final bool isSourceModelDownloaded =
-        await modelManager.isModelDownloaded(sourceLanguage.bcpCode);
-        print("Source model downloaded: $isSourceModelDownloaded");
 
-        if (!isSourceModelDownloaded) {
-          await modelManager.downloadModel(sourceLanguage.bcpCode);
-          print("Source model downloaded");
+        if(!isSourceModalDownloaded){
+          isSourceModalDownloaded = await modelManager.downloadModel(sourceLanguage.bcpCode);
         }
 
-        // Check if target model is downloaded
-        final bool isTargetModelDownloaded =
-        await modelManager.isModelDownloaded(targetLanguage.bcpCode);
-        print("Target model downloaded: $isTargetModelDownloaded");
-
-        if (!isTargetModelDownloaded) {
-          await modelManager.downloadModel(targetLanguage.bcpCode);
-          print("Target model downloaded");
-        } else {
-          print("Target model is already downloaded.");
+        if(!isTargetModalDownloaded){
+          isTargetModalDownloaded = await modelManager.downloadModel(targetLanguage.bcpCode);
         }
 
-        // Now perform translation
-        final String translatedText =
-        await onDeviceTranslator.translateText(text);
-        print("Translated text: $translatedText");
+        print(isTargetModalDownloaded);
+        print(isSourceModalDownloaded);
 
-      } catch (err) {
-        print("Error during translation: $err");
+        if(isSourceModalDownloaded&&isTargetModalDownloaded){
+          final onDeviceTranslator = OnDeviceTranslator(sourceLanguage: sourceLanguage, targetLanguage: targetLanguage);
+          final String response = await onDeviceTranslator.translateText(text);
+
+
+         setState(() {
+           translatedText = response;
+         });
+        }
+
+
+    }catch(err){
+        print(err);
       }
     } else {
       print("Text is null");
@@ -144,10 +148,12 @@ class _EditTextScreenState extends State<EditTextScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        handleTranslateClick(text);
+                         handleTranslateClick(text);
                       },
                       child: const Text("Translate"),
                     ),
+
+                    Text(translatedText)
                   ],
                 ),
               ),
