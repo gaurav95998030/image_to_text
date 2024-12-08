@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_to_text/screens/home.dart';
 import 'package:image_to_text/screens/splash_screen.dart';
 import 'package:image_to_text/themes.dart';
@@ -31,6 +32,7 @@ class MyApp  extends StatelessWidget{
       initial: savedThemeMode ?? AdaptiveThemeMode.light,
       builder: (theme,darkTheme)=> ProviderScope(
         child: MaterialApp(
+
           theme: theme,
           darkTheme: darkTheme,
           home: const SafeArea(

@@ -9,10 +9,17 @@ class Themes {
     useMaterial3: true,
     brightness: Brightness.light,
     colorSchemeSeed: Colors.blue,
+    fontFamily: 'MonaSans',
+
+    drawerTheme: DrawerThemeData(
+
+      backgroundColor: Colors.white
+    )
   );
   static final dark = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    colorSchemeSeed: Colors.blue,
+    colorSchemeSeed: Colors.pink,
+    fontFamily: 'MonaSans'
   );
 }
